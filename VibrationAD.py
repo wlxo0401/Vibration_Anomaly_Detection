@@ -22,6 +22,7 @@ class Vibration_Anomaly_Detection:
         # 이름만 사용하기 때문에 문제는 없어 보임.
         self.my_folder_info = os.listdir(self.file_full_path)
 
+        # 변수 초기화
 
 
     
@@ -44,15 +45,34 @@ class Vibration_Anomaly_Detection:
         else:
             print("취득 데이터 폴더가 있습니다!!")
 
+    def main_tool(self):
+        # i를 취득 데이터 수 만큼 돌립니다.
+        for i in range(0, self.number_of_files):
+            # 불러올 취득 파일 이름 입니다. 
+            Data_file_name = self.my_folder_info[i]
+            # 취득 파일 이름 길이 
+            Data_file_name_name_length = len(Data_file_name)
 
+            print(Data_file_name)
+            print(Data_file_name_name_length)
+            # 취득 파일 이름 길이가 25 넘으면 작동
+            if Data_file_name_name_length > 25:
+                # 취득 파일 경로 + 이름 합체
+                open_file_name = self.file_full_path + "/" + Data_file_name
+
+                # 결과 저장 파일 이름
+                analysis_file_name_v = "./senSorData/" + self.folder_name + "_A/" + Data_file_name[:Data_file_name_name_length-8] + "_A.txt"
+                
+                
+                
+                print(analysis_file_name_v)
 
     def Start(self):
         print("시작!!")
 
         self.folder_create()
+        self.main_tool()
 
-        print(self.number_of_files)
-        print(self.my_folder_info)
 
 
 if __name__ == "__main__":
