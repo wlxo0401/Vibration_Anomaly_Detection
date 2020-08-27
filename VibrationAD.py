@@ -1,5 +1,10 @@
+#-*- coding:utf-8 -*-
 # 폴더 유무 확인 위함
 import os
+import numpy as np
+import pandas as pd
+import math
+import acc_int as acc_int
 
 class Vibration_Anomaly_Detection:
 
@@ -62,10 +67,127 @@ class Vibration_Anomaly_Detection:
 
                 # 결과 저장 파일 이름
                 analysis_file_name_v = "./senSorData/" + self.folder_name + "_A/" + Data_file_name[:Data_file_name_name_length-8] + "_A.txt"
-                
-                
-                
                 print(analysis_file_name_v)
+                # 파일 불러오기
+                #with open(open_file_name,'r') as file_id:               
+                file_id = open(open_file_name)
+                #sensor_separator에 Data_file_name에 특정 위치 사이 값을 저장한다 
+                sensor_separator = Data_file_name[Data_file_name_name_length-10:Data_file_name_name_length-9]
+                #s1에 sensor_separator 저장
+                s1=sensor_separator
+                #s1을 문자열로 저장
+                s1_1=str(s1)
+                #센서 데이터 확인
+                sensor_num = Data_file_name[Data_file_name_name_length-23:Data_file_name_name_length-22]
+                sn_1=str(sensor_num)
+                s1_1 = 'V'
+                sn_1 = '1'
+                print(s1_1)
+                print(sn_1)
+                #s1_1이 진동이면
+                if s1_1=='V':
+                    #happy_go_v에 데이터를 읽어드린다.
+                    # happy_go_v = np.loadtxt(file_id, 
+                    # delimiter=' ', 
+                    # dtype={'names': ('col1', 'col2', 'col3'),
+                    # 'formats': ('i4', 'i4', 'i4')}
+                    # , skiprows=1)
+                    happy_go_v = pd.read_csv(file_id, delimiter=' ', names=["X","Y","Z"])
+
+                    happy_go_v_x1 = happy_go_v["X"].values.tolist()
+                    happy_go_v_y1 = happy_go_v["Y"].values.tolist()
+                    happy_go_v_z1 = happy_go_v["Z"].values.tolist()
+                    
+
+                    x1 = acc_int.acc_int(happy_go_v_x1, 2000)
+                    y1 = acc_int.acc_int(happy_go_v_y1, 2000)
+                    z1 = acc_int.acc_int(happy_go_v_z1, 2000)
+                    
+                    
+
+                    x1 = x1 * 30
+                    y1 = y1 * 30
+                    z1 = z1 * 30
+
+                    # X축 overall 계산식
+                    x2 = x1[10:1000]
+                    sumX = np.sum(np.power(x2, 2))/1.5
+                    resultX = round(math.sqrt(sumX), 3)
+                    # Y축 overall 계산식
+                    y2 = y1[10:1000]
+                    sumY = np.sum(np.power(y2, 2))/1.5
+                    resultY = round(math.sqrt(sumY), 3)
+                    # Z축 overall 계산식
+                    z2 = z1[10:1000]
+                    sumZ = np.sum(np.power(z2, 2))/1.5
+                    resultZ = round(math.sqrt(sumZ), 3)
+
+                    # overall 등급
+                    gradeX = 'A'
+                    gradeY = 'A'
+                    gradeZ = 'A'
+
+                    print('1')
+
+                    if sn_1 == '1': # 전동기 기준 등급
+                        if resultX >= 2.3 and resultX < 4.5:
+                            gradeX = 'B'
+                        elif resultX >= 4.5 and resultX < 7.1:
+                            gradeX = 'C'
+                        elif resultX >= 7.1:
+                            gradeX = 'D'
+
+                        if resultY >= 2.3 and resultY < 4.5:
+                            gradeY = 'B'
+                        elif resultY >= 4.5 and resultY < 7.1:
+                            gradeY = 'C'
+                        elif resultY >= 7.1:
+                            gradeY = 'D'
+
+                        if resultZ >= 2.3 and resultZ < 4.5:
+                            gradeZ = 'B'
+                        elif resultZ >= 4.5 and resultZ < 7.1:
+                            gradeZ = 'C'
+                        elif resultZ >= 7.1:
+                            gradeZ = 'D'
+
+                    else: # 축베어링 및 팬 기준 등급
+                        if resultX >= 4.5 and resultX < 7.1:
+                            gradeX = 'B'
+                        elif resultX >= 7.1 and resultX < 9.0:
+                            gradeX = 'C'
+                        elif resultX >= 9.0:
+                            gradeX = 'D'
+
+                        if resultY >= 4.5 and resultY < 7.1:
+                            gradeY = 'B'
+                        elif resultY >= 7.1 and resultY < 9.0:
+                            gradeY = 'C'
+                        elif resultY >= 9.0:
+                            gradeY = 'D'
+
+                        if resultZ >= 4.5 and resultZ < 7.1:
+                            gradeZ = 'B'
+                        elif resultZ >= 7.1 and resultZ < 9.0:
+                            gradeZ = 'C'
+                        elif resultZ >= 9.0:
+                            gradeZ = 'D'
+                    
+                    # write text file
+                    with open("/home/WS/test.txt", "w") as fid:
+                        print(fid)
+                        fid.write('overall\n')
+                        fid.write('{}\t{}\t{}\n'.format(resultX, resultY, resultZ))
+                        fid.write('{}\t\t{}\t\t{}\n'.format(gradeX, gradeY, gradeZ))
+                        fid.write('\nrow\n')
+                        #resultNumArray = np.transpose(np.arange[1:1000])
+                        #catXYZ1 = np.concatenate((resultNumArray, x1, y1, z1), axis=1)
+                        for row in range(10, 1000):
+                            fid.write('{}\t{}\t{}\t{}\n'.format(row,x1[row],y1[row],z1[row]))
+                        fid.write('EOF')
+
+
+                
 
     def Start(self):
         print("시작!!")
