@@ -51,6 +51,7 @@ class Vibration_Anomaly_Detection:
             print("취득 데이터 폴더가 있습니다!!")
 
     def main_tool(self):
+        print("주 ㄱㅣ능 시작")
         # i를 취득 데이터 수 만큼 돌립니다.
         for i in range(0, self.number_of_files):
             # 불러올 취득 파일 이름 입니다. 
