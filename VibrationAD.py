@@ -10,8 +10,8 @@ class Vibration_Anomaly_Detection:
 
     def __init__(self):
         # 데이터가 저장될 폴더 이름?, 경로 
-        self.folder_name = "C_33_200103222_1405_D"
-        self.analysis_directory_path = "./" + self.folder_name + "_A/"
+        self.folder_name = "C_33_200103_1405_D"
+        self.analysis_directory_path = "./analysisData/" + self.folder_name + "_A/"
 
         # 폴더 이름 길이를 구하는데 왜 구하는지는 모르겠음.
         self.foldername_length = len(self.folder_name)
@@ -51,7 +51,6 @@ class Vibration_Anomaly_Detection:
             print("취득 데이터 폴더가 있습니다!!")
 
     def main_tool(self):
-        print("주 ㄱㅣ능 시작")
         # i를 취득 데이터 수 만큼 돌립니다.
         for i in range(0, self.number_of_files):
             # 불러올 취득 파일 이름 입니다. 
@@ -67,22 +66,22 @@ class Vibration_Anomaly_Detection:
                 open_file_name = self.file_full_path + "/" + Data_file_name
 
                 # 결과 저장 파일 이름
-                analysis_file_name_v = "./senSorData/" + self.folder_name + "_A/" + Data_file_name[:Data_file_name_name_length-8] + "_A.txt"
+                analysis_file_name_v = "./analysisData/" + self.folder_name + "_A/" + Data_file_name[:Data_file_name_name_length-8] + "_A.txt"
                 print(analysis_file_name_v)
                 # 파일 불러오기
                 #with open(open_file_name,'r') as file_id:               
                 file_id = open(open_file_name)
                 #sensor_separator에 Data_file_name에 특정 위치 사이 값을 저장한다 
-                sensor_separator = Data_file_name[Data_file_name_name_length-10:Data_file_name_name_length-9]
+                sensor_separator = Data_file_name[Data_file_name_name_length-11:Data_file_name_name_length-10]
                 #s1에 sensor_separator 저장
                 s1=sensor_separator
                 #s1을 문자열로 저장
                 s1_1=str(s1)
                 #센서 데이터 확인
-                sensor_num = Data_file_name[Data_file_name_name_length-23:Data_file_name_name_length-22]
+                sensor_num = Data_file_name[Data_file_name_name_length-24:Data_file_name_name_length-23]
                 sn_1=str(sensor_num)
-                s1_1 = 'V'
-                sn_1 = '1'
+                # s1_1 = 'V'
+                # sn_1 = '1'
                 print(s1_1)
                 print(sn_1)
                 #s1_1이 진동이면
@@ -128,7 +127,7 @@ class Vibration_Anomaly_Detection:
                     gradeY = 'A'
                     gradeZ = 'A'
 
-                    print('1')
+                    
 
                     if sn_1 == '1': # 전동기 기준 등급
                         if resultX >= 2.3 and resultX < 4.5:
@@ -174,17 +173,18 @@ class Vibration_Anomaly_Detection:
                         elif resultZ >= 9.0:
                             gradeZ = 'D'
                     
+                    
+                    
                     # write text file
-                    with open("/home/WS/test.txt", "w") as fid:
-                        print(fid)
+                    with open(analysis_file_name_v, "w") as fid:
                         fid.write('overall\n')
-                        fid.write('{}\t{}\t{}\n'.format(resultX, resultY, resultZ))
+                        fid.write('{0:4.3f}\t{0:4.3f}\t{0:4.3f}\n'.format(resultX, resultY, resultZ))
                         fid.write('{}\t\t{}\t\t{}\n'.format(gradeX, gradeY, gradeZ))
                         fid.write('\nrow\n')
                         #resultNumArray = np.transpose(np.arange[1:1000])
                         #catXYZ1 = np.concatenate((resultNumArray, x1, y1, z1), axis=1)
                         for row in range(10, 1000):
-                            fid.write('{}\t{}\t{}\t{}\n'.format(row,x1[row],y1[row],z1[row]))
+                            fid.write('%d\t%6.5f\t%6.5f\t%6.5f\n' % (row,x1[row],y1[row],z1[row]))
                         fid.write('EOF')
 
 
